@@ -1,0 +1,78 @@
+use database DATA_ANALYST_DD;
+
+CREATE or replace TABLE  DD_SALES_DATA(
+  order_id Varchar(50),
+  order_date DATE,
+  ship_date DATE,
+  ship_mode VARCHAR(50),
+  customer_name VARCHAR(100),
+  segment VARCHAR(50),
+  state VARCHAR(50),
+  country VARCHAR(50),
+  market VARCHAR(50),
+  region VARCHAR(50),
+  product_id VARCHAR(200),
+  category VARCHAR(50),
+  sub_category VARCHAR(50),
+  product_name VARCHAR(200),
+  sales Int,
+  quantity INT,
+  discount FLOAT,
+  profit FLOAT,
+  shipping_cost FLOAT,
+  order_priority VARCHAR(50),
+  year INT
+);
+
+describe table DD_SALES_DATA; 
+
+select * From DD_SALES_DATA;
+
+--------------------------------------------1 .SET PRIMARY KEY.
+Alter table DD_SALES_DATA
+add Primary key (order_id);  
+
+--------------------------------------2. Date type Done already in coding.
+
+--------------------------#3-------------------------Extract  THE LAST NUMBER AFTER THE - AND CREATE OTHER COLUMN AND UPDATE IT.
+
+--SELECT SPLIT_PART(order_id, '-', 3) as OTHER
+--FROM DD_SALES_DATA;
+ALTER TABLE DD_SALES_DATA
+ADD COLUMN OTHER VARCHAR(255);
+
+UPDATE DD_SALES_DATA
+SET OTHER = SPLIT_PART(order_id, '-', 3);
+
+
+------------------------4----------------------------- FLAG ,IF DISCOUNT IS GREATER THEN 0 THEN  YES ELSE FALSE AND PUT IT IN NEW COLUMN FRO EVERY ORDER ID.
+
+
+select *,
+     case 
+        when (DISCOUNT) >0 then 'yes'
+        else 'False'
+        End as Discount_TYPE
+ from DD_SALES_DATA;
+
+------------------------5-------  FIND OUT HOW MUCH DAYS TAKEN FOR EACH ORDER TO PROCESS FOR THE SHIPMENT FOR EVERY ORDER ID
+
+Alter Table DD_SALES_DATA
+add Column days_taken_for_shipment Int;
+Update  DD_SALES_DATA 
+set days_taken_for_shipment = DATEDIFF(day, order_date, ship_date);
+
+select * From DD_SALES_DATA;
+----------------------------6---------------------------------
+
+Select *,
+    case 
+      when Datediff( day , ORDER_DATE , SHIP_DATE ) <= 3 then '5 star'
+      when Datediff( day , ORDER_DATE , SHIP_DATE) <= 6 then '4 star'
+      when Datediff( day , ORDER_DATE , SHIP_DATE) <= 10 then '3 star'
+      else '2'
+      end as Rating
+From DD_SALES_DATA;
+
+
+
